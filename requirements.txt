@@ -4,3 +4,6 @@ uvicorn
 python-multipart
 requests
 ollama
+chromadb
+lancedb
+pydantic

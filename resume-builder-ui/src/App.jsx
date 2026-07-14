@@ -32,7 +32,7 @@ function App() {
             />
 
             <ResultCard
-              title="Improvement Plan"
+              title="Improvement Plans"
               content={result.improvement_plan}
             />
 
