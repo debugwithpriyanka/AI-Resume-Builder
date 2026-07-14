@@ -1,21 +1,68 @@
 import { useEffect, useState } from "react";
 
 function Navbar() {
+
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
 
+
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
+
+
   useEffect(() => {
+
     if (darkMode) {
       document.body.classList.add("dark");
       localStorage.setItem("theme", "dark");
-    } else {
+    } 
+    else {
       document.body.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
+
   }, [darkMode]);
 
+
+
+  // Demo Login (No Backend)
+
+  function login(){
+
+    const demoUser = {
+      name: "Priyanka",
+      email: "user@gmail.com"
+    };
+
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify(demoUser)
+    );
+
+
+    setUser(demoUser);
+
+  }
+
+
+
+  // Logout
+
+  function logout(){
+
+    localStorage.removeItem("user");
+
+    setUser(null);
+
+  }
+
+
+
   return (
+
     <nav
       style={{
         position: "sticky",
@@ -31,6 +78,8 @@ function Navbar() {
         transition: ".3s",
       }}
     >
+
+
       {/* Logo */}
 
       <div
@@ -45,6 +94,8 @@ function Navbar() {
         🤖 AI Resume Builder
       </div>
 
+
+
       {/* Menu */}
 
       <div
@@ -54,13 +105,80 @@ function Navbar() {
           gap: "25px",
         }}
       >
-        <span style={{ cursor: "pointer" }}>Home</span>
 
-        <span style={{ cursor: "pointer" }}>Features</span>
+        <span style={{cursor:"pointer"}}>
+          Home
+        </span>
 
-        <span style={{ cursor: "pointer" }}>Jobs</span>
 
-        <span style={{ cursor: "pointer" }}>About</span>
+        <span style={{cursor:"pointer"}}>
+          Features
+        </span>
+
+
+        <span style={{cursor:"pointer"}}>
+          Jobs
+        </span>
+
+
+        <span style={{cursor:"pointer"}}>
+          About
+        </span>
+
+
+
+        {/* Login Logout */}
+
+        {
+          user ?
+
+          <>
+
+          <span>
+            👤 {user.name}
+          </span>
+
+
+          <button
+            onClick={logout}
+            style={{
+              padding:"10px 18px",
+              borderRadius:"10px",
+              border:"none",
+              cursor:"pointer",
+              background:"#ef4444",
+              color:"white",
+              fontWeight:"600"
+            }}
+          >
+            Logout
+          </button>
+
+          </>
+
+
+          :
+
+          <button
+            onClick={login}
+            style={{
+              padding:"10px 18px",
+              borderRadius:"10px",
+              border:"none",
+              cursor:"pointer",
+              background:"#22c55e",
+              color:"white",
+              fontWeight:"600"
+            }}
+          >
+            Login
+          </button>
+
+        }
+
+
+
+        {/* Dark Mode Button */}
 
         <button
           onClick={() => setDarkMode(!darkMode)}
@@ -76,9 +194,14 @@ function Navbar() {
         >
           {darkMode ? "☀ Light" : "🌙 Dark"}
         </button>
+
+
       </div>
+
     </nav>
+
   );
+
 }
 
 export default Navbar;
