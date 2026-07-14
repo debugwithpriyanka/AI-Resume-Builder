@@ -5,6 +5,7 @@ from crewai import Crew, Process
 from tasks import (
     resume_task,
     ats_task,
+    dashboard_task,
     career_task,
     cover_letter_task,
     linkedin_task,
@@ -14,36 +15,73 @@ from tasks import (
 INPUT_DIR = "inputs"
 
 
-def read(path):
+# =====================================================
+# Read Input Files
+# =====================================================
+
+def read_file(path):
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
+# =====================================================
+# Generate Resume Workflow
+# =====================================================
+
 async def generate_resume():
 
-    student = read(os.path.join(INPUT_DIR, "student_profile.txt"))
+    # Read uploaded files
+    student_profile = read_file(
+        os.path.join(INPUT_DIR, "student_profile.txt")
+    )
 
-    jd = read(os.path.join(INPUT_DIR, "job_description.txt"))
+    job_description = read_file(
+        os.path.join(INPUT_DIR, "job_description.txt")
+    )
 
-    extra = f"""
+    # Shared context for every task
+    shared_context = f"""
 
-Student Profile
+==============================
+STUDENT PROFILE
+==============================
 
-{student}
+{student_profile}
 
-Job Description
+==============================
+JOB DESCRIPTION
+==============================
 
-{jd}
+{job_description}
 
-Use ONLY this information while completing every task.
+Instructions:
+
+- Use ONLY the above information.
+- Do not invent experience.
+- Optimize every output for the Job Description.
+- Keep all outputs professional.
 """
 
-    resume_task.description += extra
+    # Add context to every task
+    # (avoids each agent working without knowing the input)
+
+    resume_task.description += shared_context
+    ats_task.description += shared_context
+    dashboard_task.description += shared_context
+    career_task.description += shared_context
+    cover_letter_task.description += shared_context
+    linkedin_task.description += shared_context
+    interview_task.description += shared_context
+
+    # =====================================================
+    # Crew
+    # =====================================================
 
     crew = Crew(
         tasks=[
             resume_task,
             ats_task,
+            dashboard_task,
             career_task,
             cover_letter_task,
             linkedin_task,
@@ -55,11 +93,17 @@ Use ONLY this information while completing every task.
 
     result = await crew.kickoff_async()
 
-    return str(result)
+    return result
 
+
+# =====================================================
+# Local Testing
+# =====================================================
 
 if __name__ == "__main__":
 
-    print(generate_resume())
+    import asyncio
 
-    print("\nCompleted Successfully")
+    asyncio.run(generate_resume())
+
+    print("\n✅ Resume Generation Completed Successfully")

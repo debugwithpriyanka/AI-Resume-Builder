@@ -1,13 +1,21 @@
 import { useState, useEffect } from "react";
+
 import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
 import UploadForm from "./components/UploadForm";
-import ResultCard from "./components/ResultCard";
+import LoadingScreen from "./components/LoadingScreen";
+import Dashboard from "./components/Dashboard";
+import SkillsGapDashboard from "./components/SkillsGapDashboard";
+import ResumePreview from "./components/ResumePreview";
+import ResultTabs from "./components/ResultTabs";
 import JobCard from "./components/JobCard";
+
 import API from "./services/api";
 
 function App() {
   const [result, setResult] = useState(null);
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -26,58 +34,75 @@ function App() {
     <>
       <Navbar />
 
+      <Hero />
+
       <div
         style={{
-          maxWidth: "1000px",
-          margin: "30px auto",
+          maxWidth: "1200px",
+          margin: "40px auto",
           padding: "20px",
         }}
       >
-        <UploadForm setResult={setResult} />
+        {/* Upload */}
 
-        {result && (
+        <UploadForm
+          setResult={setResult}
+          setLoading={setLoading}
+        />
+
+        {/* AI Loading */}
+
+        {loading && <LoadingScreen />}
+
+        {/* Generated Result */}
+
+        {!loading && result && (
           <>
-            <h2 style={{ marginTop: "30px" }}>
-              Generated Documents
-            </h2>
+            {/* Dashboard */}
 
-            <ResultCard
-              title="Resume"
-              content={result.resume}
+            <Dashboard dashboard={result.dashboard} />
+
+            {/* Skills Gap */}
+
+            <SkillsGapDashboard dashboard={result.dashboard} />
+
+            {/* Resume */}
+
+            <ResumePreview
+              resume={result.resume}
             />
 
-            <ResultCard
-              title="ATS Report"
-              content={result.ats_report}
-            />
+            {/* Tabs */}
 
-            <ResultCard
-              title="Improvement Plan"
-              content={result.improvement_plan}
-            />
+            <ResultTabs result={result} />
 
-            <ResultCard
-              title="Cover Letter"
-              content={result.cover_letter}
-            />
+            {/* Jobs */}
 
-            <ResultCard
-              title="LinkedIn About"
-              content={result.linkedin_about}
-            />
+            <div
+              style={{
+                marginTop: 50,
+              }}
+            >
+              <h2
+                style={{
+                  marginBottom: 20,
+                  color: "#1f2937",
+                }}
+              >
+                💼 Recommended Jobs
+              </h2>
 
-            <ResultCard
-              title="Interview Questions"
-              content={result.interview_questions}
-            />
-
-            <h2 style={{ marginTop: "40px" }}>
-              Recommended Jobs
-            </h2>
-
-            {jobs.map((job, index) => (
-              <JobCard key={index} job={job} />
-            ))}
+              {jobs.length > 0 ? (
+                jobs.map((job, index) => (
+                  <JobCard
+                    key={index}
+                    job={job}
+                  />
+                ))
+              ) : (
+                <p>No jobs available.</p>
+              )}
+            </div>
           </>
         )}
       </div>
