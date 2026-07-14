@@ -80,7 +80,7 @@ def download(filename: str):
 @app.get("/jobs")
 def jobs():
 
-    jobs = search_jobs("Python Developer")
+    jobs = search_jobs("Python Developers")
 
     return jobs
 
