@@ -1,0 +1,15 @@
+Python Developer
+
+Requirements
+
+Python
+
+FastAPI
+
+REST APIs
+
+SQL
+
+Git
+
+Problem Solving

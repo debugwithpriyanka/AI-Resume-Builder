@@ -1,0 +1,11 @@
+crewai==1.15.2
+fastapi
+uvicorn
+langchain-ollama
+python-dotenv
+python-multipart
+reportlab
+python-docx
+markdown
+requests
+pypdf

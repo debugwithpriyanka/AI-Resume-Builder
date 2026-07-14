@@ -1,0 +1,14 @@
+Name: Rahul Sharma
+
+Education:
+B.Tech CSE
+
+Skills:
+Python
+Java
+SQL
+React
+
+Projects:
+Library Management System
+AI Chatbot
