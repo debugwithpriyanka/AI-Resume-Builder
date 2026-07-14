@@ -80,8 +80,6 @@ def download(filename: str):
 @app.get("/jobs")
 def jobs():
 
-    jobs = search_jobs("Python Developers")
-
-    return jobs
+    return {"jobs":search_jobs()}
 
     return {"error": "File not found"}

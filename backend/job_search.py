@@ -1,12 +1,5 @@
-import requests
-
-def search_jobs(query, location="India"):
-    """
-    Dummy job search.
-    Replace with LinkedIn/Adzuna API if API keys are available.
-    """
-
-    jobs = [
+def search_jobs():
+    return [
         {
             "company": "Google",
             "title": "Python Developer",
@@ -16,9 +9,9 @@ def search_jobs(query, location="India"):
         },
         {
             "company": "Microsoft",
-            "title": "Backend Engineer",
+            "title": "AI Engineer",
             "location": "Hyderabad",
-            "match_score": 91,
+            "match_score": 92,
             "apply_link": "https://careers.microsoft.com"
         },
         {
@@ -29,5 +22,3 @@ def search_jobs(query, location="India"):
             "apply_link": "https://amazon.jobs"
         }
     ]
-
-    return jobs
