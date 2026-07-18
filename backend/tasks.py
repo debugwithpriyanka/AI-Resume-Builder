@@ -1,12 +1,13 @@
 from crewai import Task
+
 from agents import (
     resume_writer,
     ats_reviewer,
+    dashboard_analyst,
     career_coach,
     cover_letter_writer,
     linkedin_writer,
     interview_generator,
-    dashboard_analyst,
 )
 
 # =====================================================
@@ -15,33 +16,29 @@ from agents import (
 
 resume_task = Task(
     description="""
-You are given a student's profile and a target job description.
+Generate a professional ATS-friendly resume.
 
-Create a professional ATS-friendly resume.
+Requirements
 
-Requirements:
+- Professional Header
+- Career Summary
+- Technical Skills
+- Soft Skills
+- Education
+- Projects
+- Experience (if available)
+- Certifications
+- Achievements
+- Languages
+- Interests
 
-1. Professional Header
-2. Career Summary
-3. Technical Skills
-4. Soft Skills
-5. Education
-6. Projects
-7. Experience (if available)
-8. Certifications
-9. Achievements
-10. Languages
-11. Interests
+Use Markdown.
 
-Rules:
+Optimize according to the Job Description.
 
-- Use Markdown.
-- Optimize according to the Job Description.
-- Use ATS-friendly formatting.
-- Include important keywords naturally.
-- Keep the resume professional and concise.
+Never invent experience.
 """,
-    expected_output="Professional ATS-Friendly Resume in Markdown",
+    expected_output="Professional ATS Resume",
     agent=resume_writer,
     output_file="output/resume.md",
 )
@@ -52,35 +49,24 @@ Rules:
 
 ats_task = Task(
     description="""
-Review the generated resume like a professional ATS system.
+Review the generated resume.
 
-Generate a detailed report including:
+Generate
 
-# ATS Score (/100)
+- ATS Score (/100)
+- Resume Score (/100)
+- Grammar Score
+- Keyword Match
+- Strengths
+- Weaknesses
+- Missing Skills
+- Missing Keywords
+- Formatting Review
+- Final Suggestions
 
-# Resume Score (/100)
-
-# Grammar Analysis
-
-# Keyword Match
-
-# Strengths
-
-# Weaknesses
-
-# Missing Keywords
-
-# Missing Skills
-
-# Formatting Review
-
-# Final Verdict
-
-Write the report in Markdown.
-
-Be constructive and professional.
+Return in Markdown.
 """,
-    expected_output="Detailed ATS Report",
+    expected_output="ATS Report",
     agent=ats_reviewer,
     context=[resume_task],
     output_file="output/ats_report.md",
@@ -92,45 +78,49 @@ Be constructive and professional.
 
 dashboard_task = Task(
     description="""
-Analyze the Resume and ATS Report.
+Read the Resume and ATS Report.
 
 Return ONLY valid JSON.
 
-No markdown.
-No explanation.
+Do NOT use markdown.
 
-Output exactly like this:
+Do NOT wrap inside ```json
+
+Return ONLY this structure.
 
 {
-    "ats_score": 92,
-    "resume_score": 90,
-    "grammar_score": 95,
-    "keyword_match": 88,
+    "ats_score":90,
+    "resume_score":88,
+    "grammar_score":95,
+    "keyword_match":84,
 
-    "matched_skills": [
-        "React",
+    "matched_skills":[
         "Python",
+        "React",
         "Git"
     ],
 
-    "missing_skills": [
+    "missing_skills":[
         "Docker",
         "AWS",
         "CI/CD"
     ],
 
-    "recommended_certifications": [
-        "AWS Certified Cloud Practitioner",
-        "Docker Certified Associate"
+    "recommended_certifications":[
+        "AWS CCP",
+        "Docker Associate"
     ],
 
-    "overall_feedback":
-    "Short professional feedback."
+    "overall_feedback":"Professional feedback."
 }
 
-IMPORTANT
+VERY IMPORTANT
 
-Return valid JSON only.
+Return JSON ONLY.
+
+No explanation.
+
+No markdown.
 
 No extra text.
 """,
@@ -146,19 +136,27 @@ No extra text.
 
 career_task = Task(
     description="""
-Create a detailed career improvement roadmap.
+Generate a Career Improvement Plan.
 
-Include:
+Include
 
 1. Missing Skills
+
 2. Learning Roadmap
-3. Recommended Certifications
-4. Recommended Courses
-5. GitHub Improvements
-6. Portfolio Improvements
-7. Recommended Projects
-8. Interview Preparation Tips
-9. Career Growth Advice
+
+3. Certifications
+
+4. Online Courses
+
+5. Portfolio Improvements
+
+6. GitHub Improvements
+
+7. Resume Improvements
+
+8. Interview Preparation
+
+9. Career Advice
 
 Use Markdown.
 """,
@@ -174,18 +172,21 @@ Use Markdown.
 
 cover_letter_task = Task(
     description="""
-Write a personalized one-page cover letter.
+Generate a professional one-page Cover Letter.
 
-Include:
+Include
 
-- Greeting
-- Introduction
-- Why the candidate is suitable
-- Relevant skills
-- Projects
-- Closing paragraph
+Greeting
 
-Professional tone.
+Introduction
+
+Relevant Skills
+
+Projects
+
+Why suitable
+
+Closing
 
 Use Markdown.
 """,
@@ -201,21 +202,21 @@ Use Markdown.
 
 linkedin_task = Task(
     description="""
-Generate:
+Generate
 
-1. Professional LinkedIn Headline
+Professional Headline
 
-2. LinkedIn About Section
+LinkedIn About
 
-3. Top Skills
+Top Skills
 
-4. Featured Projects
+Featured Projects
 
-5. Open To Work Caption
+Open To Work Caption
 
 Use Markdown.
 """,
-    expected_output="LinkedIn Profile Content",
+    expected_output="LinkedIn Content",
     agent=linkedin_writer,
     context=[resume_task],
     output_file="output/linkedin_about.md",
@@ -227,9 +228,7 @@ Use Markdown.
 
 interview_task = Task(
     description="""
-Generate interview preparation content.
-
-Include:
+Generate
 
 10 HR Questions
 
@@ -237,11 +236,11 @@ Include:
 
 5 Coding Questions
 
-5 Scenario-Based Questions
+5 Scenario Questions
 
 Provide model answers.
 
-Difficulty:
+Difficulty
 
 Easy
 
@@ -251,38 +250,8 @@ Hard
 
 Use Markdown.
 """,
-    expected_output="Interview Preparation Guide",
+    expected_output="Interview Questions",
     agent=interview_generator,
     context=[resume_task],
     output_file="output/interview_questions.md",
 )
-
-# =====================================================
-# Dummy Job Search
-# (Later we'll replace this with a real Jobs API)
-# =====================================================
-
-def search_jobs():
-    return [
-        {
-            "company": "Google",
-            "title": "Python Developer",
-            "location": "Bangalore",
-            "match_score": 95,
-            "apply_link": "https://careers.google.com",
-        },
-        {
-            "company": "Microsoft",
-            "title": "AI Engineer",
-            "location": "Hyderabad",
-            "match_score": 92,
-            "apply_link": "https://careers.microsoft.com",
-        },
-        {
-            "company": "Amazon",
-            "title": "Software Development Engineer",
-            "location": "Chennai",
-            "match_score": 89,
-            "apply_link": "https://amazon.jobs",
-        },
-    ]

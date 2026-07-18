@@ -16,7 +16,7 @@ INPUT_DIR = "inputs"
 
 
 # =====================================================
-# Read Input Files
+# Read File
 # =====================================================
 
 def read_file(path):
@@ -25,12 +25,11 @@ def read_file(path):
 
 
 # =====================================================
-# Generate Resume Workflow
+# Generate Resume
 # =====================================================
 
 async def generate_resume():
 
-    # Read uploaded files
     student_profile = read_file(
         os.path.join(INPUT_DIR, "student_profile.txt")
     )
@@ -39,45 +38,70 @@ async def generate_resume():
         os.path.join(INPUT_DIR, "job_description.txt")
     )
 
-    # Shared context for every task
     shared_context = f"""
 
-==============================
+========================================
 STUDENT PROFILE
-==============================
+========================================
 
 {student_profile}
 
-==============================
+========================================
 JOB DESCRIPTION
-==============================
+========================================
 
 {job_description}
 
-Instructions:
+Instructions
 
-- Use ONLY the above information.
-- Do not invent experience.
-- Optimize every output for the Job Description.
-- Keep all outputs professional.
+• Use ONLY the above information.
+
+• Never invent experience.
+
+• Tailor every output to the Job Description.
+
+• Keep outputs professional.
+
 """
 
-    # Add context to every task
-    # (avoids each agent working without knowing the input)
+    # Reset descriptions every request
+    resume_task.description = (
+        "Generate an ATS-friendly Resume.\n"
+        + shared_context
+    )
 
-    resume_task.description += shared_context
-    ats_task.description += shared_context
-    dashboard_task.description += shared_context
-    career_task.description += shared_context
-    cover_letter_task.description += shared_context
-    linkedin_task.description += shared_context
-    interview_task.description += shared_context
+    ats_task.description = (
+        "Review the Resume and generate ATS Report.\n"
+        + shared_context
+    )
 
-    # =====================================================
-    # Crew
-    # =====================================================
+    dashboard_task.description = (
+        "Generate ONLY valid JSON dashboard.\n"
+        + shared_context
+    )
+
+    career_task.description = (
+        "Generate Career Improvement Plan.\n"
+        + shared_context
+    )
+
+    cover_letter_task.description = (
+        "Generate Professional Cover Letter.\n"
+        + shared_context
+    )
+
+    linkedin_task.description = (
+        "Generate LinkedIn Profile Content.\n"
+        + shared_context
+    )
+
+    interview_task.description = (
+        "Generate Interview Questions.\n"
+        + shared_context
+    )
 
     crew = Crew(
+
         tasks=[
             resume_task,
             ats_task,
@@ -87,17 +111,31 @@ Instructions:
             linkedin_task,
             interview_task,
         ],
+
         process=Process.sequential,
+
         verbose=True,
+
+        memory=False,
+
+        cache=False,
     )
+
+    print("\n==============================")
+    print("Starting CrewAI...")
+    print("==============================\n")
 
     result = await crew.kickoff_async()
 
-    return result
+    print("\n==============================")
+    print("CrewAI Finished Successfully")
+    print("==============================\n")
+
+    return str(result)
 
 
 # =====================================================
-# Local Testing
+# Local Test
 # =====================================================
 
 if __name__ == "__main__":
@@ -105,5 +143,3 @@ if __name__ == "__main__":
     import asyncio
 
     asyncio.run(generate_resume())
-
-    print("\n✅ Resume Generation Completed Successfully")

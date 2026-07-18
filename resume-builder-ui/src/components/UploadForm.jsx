@@ -2,10 +2,14 @@ import { useState } from "react";
 import { FaCloudUploadAlt, FaTrash } from "react-icons/fa";
 import API from "../services/api";
 
-function UploadForm({ setResult }) {
+function UploadForm({
+  setResult,
+  setJobs,
+  loading,
+  setLoading,
+}) {
   const [profile, setProfile] = useState(null);
   const [job, setJob] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const [dragProfile, setDragProfile] = useState(false);
   const [dragJob, setDragJob] = useState(false);
@@ -36,7 +40,7 @@ function UploadForm({ setResult }) {
 
   const handleSubmit = async () => {
     if (!profile || !job) {
-      alert("Upload both files.");
+      alert("Please upload both files.");
       return;
     }
 
@@ -48,16 +52,46 @@ function UploadForm({ setResult }) {
     try {
       setLoading(true);
 
-      const res = await API.post("/generate-resume", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      console.log("Uploading...");
 
-      setResult(res.data);
+      const res = await API.post(
+        "/generate-resume",
+        formData,
+        {
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
+      );
+
+      console.log(
+        "Backend Response:",
+        res.data
+      );
+
+      if (res.data.success) {
+        setResult(res.data);
+
+        if (res.data.jobs) {
+          setJobs(res.data.jobs);
+        }
+
+        alert("Resume Generated Successfully!");
+      } else {
+        alert("Backend returned unsuccessful response.");
+      }
     } catch (err) {
-      console.log(err);
-      alert("Generation failed.");
+      console.error(err);
+
+      if (err.response) {
+        console.log(
+          "Error Response:",
+          err.response.data
+        );
+      }
+
+      alert("Generation Failed.");
     } finally {
       setLoading(false);
     }
@@ -75,7 +109,7 @@ function UploadForm({ setResult }) {
     <>
       <h3
         style={{
-          marginBottom: 10,
+          marginBottom: 12,
           color: "#374151",
         }}
       >
@@ -88,39 +122,54 @@ function UploadForm({ setResult }) {
           setDrag(true);
         }}
         onDragLeave={() => setDrag(false)}
-        onDrop={(e) => handleDrop(e, type)}
+        onDrop={(e) =>
+          handleDrop(e, type)
+        }
         style={{
           border: drag
             ? "3px solid #2563eb"
             : "2px dashed #cbd5e1",
-          borderRadius: 15,
+          borderRadius: 16,
           padding: 35,
-          background: drag ? "#eff6ff" : "#fafafa",
+          background: drag
+            ? "#eff6ff"
+            : "#fafafa",
           textAlign: "center",
           transition: ".3s",
           cursor: "pointer",
         }}
       >
         <input
+          hidden
           id={id}
           type="file"
-          hidden
           accept=".txt,.pdf,.doc,.docx"
-          onChange={(e) => setFile(e.target.files[0])}
+          onChange={(e) =>
+            setFile(e.target.files[0])
+          }
         />
 
-        <label htmlFor={id} style={{ cursor: "pointer" }}>
+        <label
+          htmlFor={id}
+          style={{
+            cursor: "pointer",
+          }}
+        >
           <FaCloudUploadAlt
-            size={50}
+            size={55}
             color="#2563eb"
           />
 
-          <h3>Drag & Drop</h3>
+          <h3>
+            Drag & Drop Files
+          </h3>
 
-          <p>or Click to Browse</p>
+          <p>
+            or Click to Browse
+          </p>
 
           <small>
-            PDF • DOCX • TXT
+            TXT • PDF • DOC • DOCX
           </small>
         </label>
 
@@ -128,30 +177,40 @@ function UploadForm({ setResult }) {
           <div
             style={{
               marginTop: 20,
-              padding: 15,
               background: "#fff",
-              borderRadius: 10,
+              padding: 15,
+              borderRadius: 12,
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent:
+                "space-between",
               alignItems: "center",
               boxShadow:
-                "0 5px 15px rgba(0,0,0,.08)",
+                "0 6px 18px rgba(0,0,0,.08)",
             }}
           >
             <div>
-              <strong>{file.name}</strong>
+              <strong>
+                {file.name}
+              </strong>
 
               <br />
 
               <small>
-                {(file.size / 1024).toFixed(2)} KB
+                {(
+                  file.size / 1024
+                ).toFixed(2)}{" "}
+                KB
               </small>
             </div>
 
             <FaTrash
               color="red"
-              style={{ cursor: "pointer" }}
-              onClick={() => removeFile(type)}
+              style={{
+                cursor: "pointer",
+              }}
+              onClick={() =>
+                removeFile(type)
+              }
             />
           </div>
         )}
@@ -165,9 +224,10 @@ function UploadForm({ setResult }) {
         maxWidth: 900,
         margin: "40px auto",
         padding: 35,
-        borderRadius: 20,
         background: "#fff",
-        boxShadow: "0 10px 25px rgba(0,0,0,.08)",
+        borderRadius: 20,
+        boxShadow:
+          "0 10px 25px rgba(0,0,0,.08)",
       }}
     >
       <h2
@@ -210,11 +270,15 @@ function UploadForm({ setResult }) {
           padding: 16,
           border: "none",
           borderRadius: 12,
-          background: "#2563eb",
+          background: loading
+            ? "#94a3b8"
+            : "#2563eb",
           color: "#fff",
           fontSize: 18,
           fontWeight: 600,
-          cursor: "pointer",
+          cursor: loading
+            ? "not-allowed"
+            : "pointer",
         }}
       >
         {loading

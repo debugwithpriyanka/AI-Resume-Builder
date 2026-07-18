@@ -1,33 +1,29 @@
 from crewai import Agent, LLM
 
 # =====================================================
-# Configure Ollama (Llama 3)
+# LLM Configuration
 # =====================================================
 
 llm = LLM(
     model="ollama/llama3",
     base_url="http://localhost:11434",
-    temperature=0.3,
+    temperature=0.2,
 )
 
 # =====================================================
-# Resume Writer Agent
+# Resume Writer
 # =====================================================
 
 resume_writer = Agent(
     role="Senior Resume Writer",
     goal="""
-Create an ATS-friendly, professional, modern resume that is
-optimized for the provided job description.
+Generate an ATS-friendly professional resume
+tailored to the provided job description.
 """,
     backstory="""
-You are a world-class resume writer with over 15 years of
-experience helping software engineers and students get hired at
-companies like Google, Microsoft, Amazon, Meta and Adobe.
-
-You understand ATS systems and recruiter expectations.
-
-Your resumes are clean, professional and keyword optimized.
+You are a professional resume writer with years of
+experience creating resumes that successfully pass
+Applicant Tracking Systems (ATS) and impress recruiters.
 """,
     llm=llm,
     verbose=True,
@@ -40,16 +36,33 @@ Your resumes are clean, professional and keyword optimized.
 ats_reviewer = Agent(
     role="ATS Resume Reviewer",
     goal="""
-Analyze resumes exactly like an Applicant Tracking System.
-Evaluate keyword match, formatting, grammar and overall quality.
+Evaluate resumes exactly like a modern Applicant
+Tracking System.
 """,
     backstory="""
-You are an ATS optimization expert.
+You are an ATS specialist. You analyze formatting,
+keywords, readability, grammar and resume quality.
+""",
+    llm=llm,
+    verbose=True,
+)
 
-You have reviewed thousands of resumes and know how modern
-recruitment software evaluates candidates.
+# =====================================================
+# Dashboard Analyst
+# =====================================================
 
-Provide honest and actionable feedback.
+dashboard_analyst = Agent(
+    role="Resume Dashboard Analyst",
+    goal="""
+Generate ONLY valid JSON for the frontend dashboard.
+
+Never return markdown.
+Never use code blocks.
+Return ONLY JSON.
+""",
+    backstory="""
+You convert ATS analysis into structured dashboard
+statistics for frontend visualization.
 """,
     llm=llm,
     verbose=True,
@@ -60,22 +73,14 @@ Provide honest and actionable feedback.
 # =====================================================
 
 career_coach = Agent(
-    role="Senior Career Coach",
+    role="Career Coach",
     goal="""
-Help students improve their resumes and build a roadmap
-towards becoming industry-ready software engineers.
+Suggest skills, certifications, roadmap,
+career advice and improvement plan.
 """,
     backstory="""
-You have mentored thousands of students.
-
-You recommend certifications,
-projects,
-career roadmaps,
-learning resources,
-GitHub improvements,
-portfolio improvements,
-interview preparation,
-and career growth plans.
+You have guided thousands of software engineering
+students to improve their careers.
 """,
     llm=llm,
     verbose=True,
@@ -86,17 +91,13 @@ and career growth plans.
 # =====================================================
 
 cover_letter_writer = Agent(
-    role="Professional Cover Letter Writer",
+    role="Cover Letter Expert",
     goal="""
-Write personalized and professional cover letters
-tailored specifically to the uploaded resume and job description.
+Generate a professional personalized cover letter.
 """,
     backstory="""
-You specialize in writing high-converting cover letters
-that increase interview chances.
-
-Every cover letter should sound human,
-professional and personalized.
+You write compelling cover letters that increase
+interview chances.
 """,
     llm=llm,
     verbose=True,
@@ -109,83 +110,30 @@ professional and personalized.
 linkedin_writer = Agent(
     role="LinkedIn Profile Expert",
     goal="""
-Optimize LinkedIn profiles to attract recruiters.
+Generate professional LinkedIn content
+optimized for recruiters.
 """,
     backstory="""
-You are a LinkedIn branding expert.
-
-You create engaging headlines,
-About sections,
-Featured project descriptions,
-and recruiter-friendly profiles.
+You optimize LinkedIn profiles for software engineers.
 """,
     llm=llm,
     verbose=True,
 )
 
 # =====================================================
-# Interview Generator
+# Interview Question Generator
 # =====================================================
 
 interview_generator = Agent(
-    role="Technical Interview Expert",
+    role="Technical Interviewer",
     goal="""
-Generate interview questions with answers based on
-the generated resume and job description.
+Generate HR, technical,
+coding and scenario-based interview questions
+with model answers.
 """,
     backstory="""
-You are a Senior Software Engineering Interviewer.
-
-Generate
-
-• HR Questions
-
-• Technical Questions
-
-• Coding Questions
-
-• Scenario Based Questions
-
-Also provide model answers.
-""",
-    llm=llm,
-    verbose=True,
-)
-
-# =====================================================
-# Dashboard Analyst (NEW)
-# =====================================================
-
-dashboard_analyst = Agent(
-    role="Resume Analytics Expert",
-    goal="""
-Generate structured dashboard analytics in JSON format.
-
-The JSON should contain
-
-ATS Score
-
-Resume Score
-
-Grammar Score
-
-Keyword Match
-
-Matched Skills
-
-Missing Skills
-
-Recommended Certifications
-
-Overall Feedback
-""",
-    backstory="""
-You specialize in resume analytics.
-
-You convert resume evaluations into structured JSON
-that frontend dashboards can directly consume.
-
-Always output valid JSON only.
+You are a Senior Software Engineer who has conducted
+hundreds of interviews at top product companies.
 """,
     llm=llm,
     verbose=True,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -10,28 +10,17 @@ import ResumePreview from "./components/ResumePreview";
 import ResultTabs from "./components/ResultTabs";
 import JobCard from "./components/JobCard";
 
-import API from "./services/api";
-
 function App() {
+
   const [result, setResult] = useState(null);
+
   const [jobs, setJobs] = useState([]);
+
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const res = await API.get("/jobs");
-        setJobs(res.data.jobs);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchJobs();
-  }, []);
 
   return (
     <>
+
       <Navbar />
 
       <Hero />
@@ -43,40 +32,34 @@ function App() {
           padding: "20px",
         }}
       >
-        {/* Upload */}
 
         <UploadForm
           setResult={setResult}
+          setJobs={setJobs}
+          loading={loading}
           setLoading={setLoading}
         />
 
-        {/* AI Loading */}
-
         {loading && <LoadingScreen />}
-
-        {/* Generated Result */}
 
         {!loading && result && (
           <>
-            {/* Dashboard */}
 
-            <Dashboard dashboard={result.dashboard} />
+            <Dashboard
+              dashboard={result.dashboard}
+            />
 
-            {/* Skills Gap */}
-
-            <SkillsGapDashboard dashboard={result.dashboard} />
-
-            {/* Resume */}
+            <SkillsGapDashboard
+              dashboard={result.dashboard}
+            />
 
             <ResumePreview
               resume={result.resume}
             />
 
-            {/* Tabs */}
-
-            <ResultTabs result={result} />
-
-            {/* Jobs */}
+            <ResultTabs
+              result={result}
+            />
 
             <div
               style={{
@@ -85,7 +68,7 @@ function App() {
             >
               <h2
                 style={{
-                  marginBottom: 20,
+                  marginBottom: 25,
                   color: "#1f2937",
                 }}
               >
@@ -100,12 +83,26 @@ function App() {
                   />
                 ))
               ) : (
-                <p>No jobs available.</p>
+                <div
+                  style={{
+                    background: "#fff",
+                    padding: 25,
+                    borderRadius: 15,
+                    textAlign: "center",
+                    boxShadow:
+                      "0 5px 20px rgba(0,0,0,.08)",
+                  }}
+                >
+                  No Jobs Found
+                </div>
               )}
             </div>
+
           </>
         )}
+
       </div>
+
     </>
   );
 }
